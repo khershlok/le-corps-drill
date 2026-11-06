@@ -1,0 +1,221 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Le Corps Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one centred flash-card column, like a labelled anatomy plate; score strip above, word list below */
+:root {
+  --bg: #eef2f1;
+  --card: #fbfcfb;
+  --ink: #1d2b33;
+  --muted: #5d6e74;
+  --line: #cdd8d7;
+  --accent: #c2412d;      /* anatomy-plate red ink */
+  --good: #2f7a4f;
+  --bad: #b3352a;
+  --soft: #e3eae9;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121a1e; --card: #1a242a; --ink: #e4ecea; --muted: #93a5a9; --line: #2c3a40;
+  --accent: #ec7a63; --good: #63c08a; --bad: #f07a6c; --soft: #222f35; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121a1e; --card: #1a242a; --ink: #e4ecea; --muted: #93a5a9; --line: #2c3a40;
+  --accent: #ec7a63; --good: #63c08a; --bad: #f07a6c; --soft: #222f35; color-scheme: dark }
+
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--body); font-size: 16px; line-height: 1.5; padding: 0 16px; }
+.wrap { max-width: 560px; margin: 0 auto; padding-block: 28px 48px; display: flex; flex-direction: column; gap: 20px; }
+
+header { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--display); font-weight: 800; font-size: 2rem; margin: 0; letter-spacing: -0.02em; line-height: 1; }
+h1 span { color: var(--accent); }
+.sub { color: var(--muted); font-size: .9rem; margin: 4px 0 0; }
+
+.stats { display: flex; gap: 18px; font-family: var(--mono); font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stats b { display: block; font-size: 1.25rem; color: var(--ink); font-weight: 500; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 28px 24px 24px; display: flex; flex-direction: column; gap: 18px; }
+.label { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.prompt { font-family: var(--display); font-weight: 800; font-size: clamp(2.4rem, 10vw, 3.4rem); line-height: 1; margin: 0; text-wrap: balance; }
+
+form { display: flex; gap: 8px; }
+input[type=text] { flex: 1; min-width: 0; font: 500 1.25rem var(--body); padding: 12px 14px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
+input[type=text]:focus { outline: none; border-color: var(--ink); }
+input.ok { border-color: var(--good); }
+input.no { border-color: var(--bad); }
+button { font: 700 1rem var(--body); border-radius: 10px; border: 0; cursor: pointer; padding: 12px 18px; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.primary { background: var(--ink); color: var(--bg); }
+.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 8px 12px; font-size: .85rem; }
+
+.accents { display: flex; gap: 6px; flex-wrap: wrap; }
+.accents button { background: var(--soft); color: var(--ink); padding: 6px 12px; font-size: 1rem; }
+.row { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.feedback { min-height: 3.2em; border-radius: 10px; padding: 12px 14px; background: var(--soft); font-size: .98rem; }
+.feedback.good { color: var(--good); }
+.feedback.bad { color: var(--bad); }
+.feedback .ans { color: var(--ink); font-weight: 700; }
+.feedback.idle { color: var(--muted); }
+
+details { border-top: 1px solid var(--line); padding-top: 12px; }
+summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: .92rem; }
+td { padding: 6px 4px; border-bottom: 1px solid var(--line); }
+td.n { font-family: var(--mono); font-size: .8rem; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--line); }
+.pill.weak { background: var(--bad); } .pill.ok { background: var(--good); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pop { animation: pop .25s ease-out; }
+  @keyframes pop { from { transform: translateY(6px); opacity: .4; } to { transform: none; opacity: 1; } }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Le <span>Corps</span></h1>
+      <p class="sub">English → French. Include the article (le, la, l').</p>
+    </div>
+    <div class="stats">
+      <div><b id="sScore">0/0</b>correct</div>
+      <div><b id="sStreak">0</b>streak</div>
+      <div><b id="sBest">0</b>best</div>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="label"><span>Translate into French</span><span id="gender"></span></div>
+    <p class="prompt pop" id="prompt">arm</p>
+    <form id="form" autocomplete="off">
+      <input type="text" id="answer" placeholder="le bras…" spellcheck="false" autocapitalize="off" aria-label="Your French answer">
+      <button class="primary" id="go" type="submit">Check</button>
+    </form>
+    <div class="row">
+      <div class="accents" aria-label="Insert accented letter">
+        <button type="button" data-ch="é">é</button>
+        <button type="button" data-ch="è">è</button>
+        <button type="button" data-ch="ê">ê</button>
+        <button type="button" data-ch="à">à</button>
+        <button type="button" data-ch="ç">ç</button>
+        <button type="button" data-ch="'">'</button>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button type="button" class="ghost" id="hint">Hint</button>
+        <button type="button" class="ghost" id="skip">Show answer</button>
+      </div>
+    </div>
+    <div class="feedback idle" id="fb" aria-live="polite">Type the French word and press Enter. Missed words come back more often.</div>
+    <details>
+      <summary>Word list and your accuracy</summary>
+      <table><tbody id="list"></tbody></table>
+      <div style="margin-top:12px"><button type="button" class="ghost" id="reset">Reset progress</button></div>
+    </details>
+  </section>
+</div>
+
+<script>
+const WORDS = [
+  ["arm","le bras"],["ankle","la cheville"],["bone","l'os","m"],["blood","le sang"],
+  ["back","le dos"],["leg","la jambe"],["shoulder","l'épaule","f"],["finger","le doigt"],
+  ["wrist","le poignet"],["neck","le cou"],["hip","la hanche"],["elbow","le coude"],
+  ["knee","le genou"],["brain","le cerveau"]
+];
+const $ = id => document.getElementById(id);
+const KEY = "le-corps-v1";
+let st = { w: WORDS.map(() => ({ r: 0, t: 0, weight: 3 })), right: 0, total: 0, streak: 0, best: 0 };
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.w && s.w.length === WORDS.length) st = s; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+
+let cur = -1, last = -1, answered = false, hintLvl = 0, missedThis = false;
+
+const norm = s => s.toLowerCase().replace(/[’‘`´]/g, "'").replace(/\s*'\s*/g, "'").replace(/\s+/g, " ").trim();
+const strip = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+const noun = s => s.replace(/^(le |la |les |l')/, "");
+
+function pick() {
+  const pool = st.w.map((w, i) => i === last ? 0 : w.weight);
+  let r = Math.random() * pool.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < pool.length; i++) { r -= pool[i]; if (r <= 0) return i; }
+  return 0;
+}
+
+function next() {
+  last = cur; cur = pick(); answered = false; hintLvl = 0; missedThis = false;
+  const [en, , g] = WORDS[cur];
+  const p = $("prompt"); p.textContent = en; p.classList.remove("pop"); void p.offsetWidth; p.classList.add("pop");
+  $("gender").textContent = g ? (g === "m" ? "masculine" : "feminine") : "";
+  const a = $("answer"); a.value = ""; a.className = ""; a.focus();
+  $("go").textContent = "Check";
+  $("fb").className = "feedback idle"; $("fb").textContent = "Your turn.";
+}
+
+function record(ok) {
+  const w = st.w[cur]; w.t++; st.total++;
+  if (ok) { w.r++; st.right++; st.streak++; st.best = Math.max(st.best, st.streak); w.weight = Math.max(1, w.weight - 1); }
+  else { st.streak = 0; w.weight = Math.min(10, w.weight + 3); }
+  save(); render();
+}
+
+function check() {
+  if (answered) return next();
+  const raw = $("answer").value; if (!raw.trim()) return;
+  const want = WORDS[cur][1], got = norm(raw), fb = $("fb"), a = $("answer");
+  const show = `<span class="ans">${want}</span>`;
+  let ok = false, msg;
+  if (got === want) { ok = true; msg = `Correct! ${show}`; }
+  else if (strip(got) === strip(want)) { ok = true; msg = `Correct, but watch the accent: ${show}`; }
+  else if (strip(noun(got)) === strip(noun(want))) { msg = `Right word, wrong or missing article. It's ${show}`; }
+  else { msg = `Not quite. It's ${show}`; }
+  if (hintLvl > 0 && ok) msg += " (with a hint)";
+  record(ok && !missedThis);
+  answered = true; a.className = ok ? "ok" : "no";
+  fb.className = "feedback " + (ok ? "good" : "bad"); fb.innerHTML = msg + `<br><small style="color:var(--muted)">Press Enter for the next word.</small>`;
+  $("go").textContent = "Next";
+}
+
+$("form").addEventListener("submit", e => { e.preventDefault(); check(); });
+$("hint").onclick = () => {
+  if (answered) return;
+  const want = WORDS[cur][1]; hintLvl++;
+  const art = want.match(/^(le |la |l')/)[0];
+  const rest = noun(want);
+  const shown = art + rest.slice(0, hintLvl) + "·".repeat(Math.max(0, rest.length - hintLvl));
+  $("fb").className = "feedback idle"; $("fb").innerHTML = `Hint: <span class="ans">${shown}</span>`;
+  if (hintLvl >= rest.length) missedThis = true;
+  $("answer").focus();
+};
+$("skip").onclick = () => {
+  if (answered) return next();
+  record(false); answered = true; $("go").textContent = "Next";
+  $("fb").className = "feedback bad"; $("fb").innerHTML = `The answer is <span class="ans">${WORDS[cur][1]}</span>. It'll come back soon.`;
+  $("answer").focus();
+};
+document.querySelectorAll("[data-ch]").forEach(b => b.onclick = () => {
+  const a = $("answer"), s = a.selectionStart ?? a.value.length, e = a.selectionEnd ?? a.value.length;
+  a.value = a.value.slice(0, s) + b.dataset.ch + a.value.slice(e);
+  a.focus(); a.setSelectionRange(s + 1, s + 1);
+});
+$("reset").onclick = () => {
+  st = { w: WORDS.map(() => ({ r: 0, t: 0, weight: 3 })), right: 0, total: 0, streak: 0, best: 0 };
+  save(); render(); next();
+};
+
+function render() {
+  $("sScore").textContent = `${st.right}/${st.total}`;
+  $("sStreak").textContent = st.streak; $("sBest").textContent = st.best;
+  $("list").innerHTML = WORDS.map(([en, fr, g], i) => {
+    const w = st.w[i], pct = w.t ? Math.round(100 * w.r / w.t) : null;
+    const cls = pct === null ? "" : pct >= 75 ? "ok" : pct < 50 ? "weak" : "";
+    return `<tr><td><span class="pill ${cls}"></span>${en}</td><td>${fr}${g ? ` (${g})` : ""}</td><td class="n">${w.r}/${w.t}</td></tr>`;
+  }).join("");
+}
+
+render(); next();
+</script>
+
+</body></html>
